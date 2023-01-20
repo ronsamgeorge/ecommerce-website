@@ -19,7 +19,9 @@ const Left = styled.div`
   padding: 20px;
 `;
 
-const Logo = styled.h1``;
+const Logo = styled.h1`
+  text-align: center;
+`;
 
 const Desc = styled.p`
   margin: 10px 0px;
@@ -27,6 +29,7 @@ const Desc = styled.p`
 
 const SocialContainer = styled.div`
   display: flex;
+  justify-content: center;
 `;
 
 const SocialIcon = styled.div`
