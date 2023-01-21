@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { mobile } from "../responsive";
 
 const Container = styled.div`
   width: 100vw;
@@ -20,11 +21,14 @@ const Wrapper = styled.div`
   width: 25%;
   padding: 20px;
   background-color: white;
+  ${mobile({ width: "80%" })};
 `;
 
 const Title = styled.h1`
   font-size: 24px;
   font-weight: 300;
+
+  ${mobile({ textAlign: "center" })};
 `;
 
 const Form = styled.form`
@@ -47,6 +51,7 @@ const Button = styled.button`
   color: white;
   cursor: pointer;
   margin-bottom: 10px;
+  ${mobile({ margin: "auto", marginBottom: "10px" })};
 `;
 
 const Link = styled.a`
@@ -54,6 +59,7 @@ const Link = styled.a`
   font-size: 12px;
   text-decoration: underline;
   cursor: pointer;
+  ${mobile({ margin: "5px auto" })};
 `;
 
 const Login = () => {

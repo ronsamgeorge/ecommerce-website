@@ -77,6 +77,7 @@ const ListItem = styled.li`
 const Right = styled.div`
   flex: 1;
   padding: 20px;
+  ${mobile({ backgroundColor: "#fff8f8" })};
 `;
 
 const ContactItem = styled.div`
