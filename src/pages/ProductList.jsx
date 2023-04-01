@@ -60,7 +60,7 @@ const ProductList = () => {
     <Container>
       <Navbar />
       <Announcement />
-      <Title>Dresses</Title>
+      <Title>Category : {category ? category : "All Products"}</Title>
       <FilterContainer>
         <Filter>
           <FilterText>Filter Products</FilterText>

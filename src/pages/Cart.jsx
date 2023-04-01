@@ -3,9 +3,16 @@ import styled from "styled-components";
 import Navbar from "../components/Navbar";
 import Annoucement from "../components/Annoucement";
 import Footer from "../components/Footer";
-import { Add, Remove } from "@material-ui/icons";
+import { Add, Remove, StrikethroughS } from "@material-ui/icons";
 import { mobile } from "../responsive";
+import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout";
+import { useState } from "react";
+import { useEffect } from "react";
+import { userRequest } from "../requestMethods";
+import { useNavigate } from "react-router-dom";
 
+const KEY = process.env.REACT_APP_STRIPE;
 const Container = styled.div``;
 
 const Wrapper = styled.div`
@@ -150,6 +157,32 @@ const Button = styled.button`
 `;
 
 const Cart = () => {
+  const cart = useSelector((state) => state.cart);
+  const [stripeToken, setStripeToken] = useState(null);
+  const navigate = useNavigate();
+
+  const onToken = (token) => {
+    setStripeToken(token);
+  };
+
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const res = await userRequest.post("/checkout/payment", {
+          tokenId: stripeToken.id,
+          amount: cart.total * 100,
+        });
+
+        navigate("/success", {
+          state: { stripeData: res.data, cart: cart },
+        });
+      } catch (error) {}
+    };
+    stripeToken && makeRequest();
+  }, [stripeToken, cart.total, navigate]);
+
+  console.log(stripeToken);
+
   return (
     <Container>
       <Navbar />
@@ -166,58 +199,38 @@ const Cart = () => {
         </Top>
         <Bottom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A" />
-                <Details>
-                  <ProductName>
-                    <b>Product : </b>Thunder Shoes
-                  </ProductName>
-                  <ProductId>
-                    <b>ID : </b>Thunder Shoes
-                  </ProductId>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size : </b> UK 10
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
+            {cart.products.map((product) => (
+              <Product>
+                <ProductDetail>
+                  <Image src={product.img} />
+                  <Details>
+                    <ProductName>
+                      <b>Product : </b>
+                      {product.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ID : </b> {product._id}
+                    </ProductId>
+                    <ProductColor color={product.color} />
+                    <ProductSize>
+                      <b>Size : </b> {product.size}
+                    </ProductSize>
+                  </Details>
+                </ProductDetail>
 
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>Rs 2000</ProductPrice>
-              </PriceDetail>
-            </Product>
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <Add />
+                    <ProductAmount>{product.quantity}</ProductAmount>
+                    <Remove />
+                  </ProductAmountContainer>
+                  <ProductPrice>
+                    {product.price * product.quantity}
+                  </ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
             <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src="https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1614188818-TD1MTHU_SHOE_ANGLE_GLOBAL_MENS_TREE_DASHERS_THUNDER_b01b1013-cd8d-48e7-bed9-52db26515dc4.png?crop=1xw:1.00xh;center,top&resize=480%3A%2A" />
-                <Details>
-                  <ProductName>
-                    <b>Product : </b>Thunder Shoes
-                  </ProductName>
-                  <ProductId>
-                    <b>ID : </b>Thunder Shoes
-                  </ProductId>
-                  <ProductColor color="black" />
-                  <ProductSize>
-                    <b>Size : </b> UK 10
-                  </ProductSize>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <Add />
-                  <ProductAmount>2</ProductAmount>
-                  <Remove />
-                </ProductAmountContainer>
-                <ProductPrice>Rs 2000</ProductPrice>
-              </PriceDetail>
-            </Product>
           </Info>
           <Summary>
             <SummaryTitle></SummaryTitle>
@@ -235,9 +248,19 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>Rs 2100</SummaryItemPrice>
+              <SummaryItemPrice>{cart.total}</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECKOUT</Button>
+            <StripeCheckout
+              name="LAMA SHOP"
+              billingAddress
+              shippingAddress
+              description={`Your total is Rs ${cart.total}`}
+              amount={cart.total * 1000}
+              token={onToken}
+              stripeKey="pk_test_51MU7CLErgvX2aNh3RnatFMVemiavKxyN22Q3wb50lIjFeQQHpuDKKc49bE1uuTgWrtz4RGZv0qsxtGGqr8xyGJeA00GXkLP2dH"
+            >
+              <Button>Check Out</Button>
+            </StripeCheckout>
           </Summary>
         </Bottom>
       </Wrapper>
