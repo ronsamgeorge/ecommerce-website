@@ -18,11 +18,14 @@ const App = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={user === null ? <Navigate replace to="/login" /> : <Home />}
+        />
         <Route path="/cart" element={<Cart />} />
         <Route
           path="/login"
-          element={user ? <Navigate replace to="/" /> : <Login />}
+          element={user !== null ? <Navigate replace to="/" /> : <Login />}
         />
         <Route
           path="/register"

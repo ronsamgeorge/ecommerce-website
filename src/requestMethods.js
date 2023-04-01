@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "/api/";
+const BASE_URL = "https://ronecom.onrender.com/api/";
 const TOKEN = localStorage.getItem("persist:root")?.user
   ? JSON.parse(JSON.parse(localStorage.getItem("persist:root"))?.user)
       .currentUser.accessToken
